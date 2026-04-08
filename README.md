@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Movie Watchlist (Next.js + TMDB + Prisma + SQLite)
+
+Mini project: fetch trending movies from **TMDB** (external API) and let users save/manage their own watchlist via **Prisma ORM + SQLite**.
 
 ## Getting Started
 
@@ -16,7 +18,46 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
+
+- **TMDB_API_KEY**: required to fetch trending movies on the home page.
+
+Create `.env.local`:
+
+```bash
+TMDB_API_KEY="YOUR_TMDB_KEY"
+```
+
+### Database (Prisma + SQLite)
+
+This project uses **SQLite** (`dev.db`) and **Prisma**.
+
+- Prisma Client is generated automatically on install (`postinstall`).
+- Generate manually if needed:
+
+```bash
+pnpm prisma generate
+```
+
+### Pages (3+)
+
+- **`/`**: trending movies from TMDB (external API fetch)
+- **`/add`**: add a movie manually (form + zod validation)
+- **`/my-list`**: manage your watchlist (CRUD UI)
+
+### API (CRUD)
+
+The API route is in `app/api/watchlist/route.ts`:
+
+- **GET**: list watchlist
+- **POST**: create
+- **PUT**: update
+- **DELETE**: delete
+
+### Validation (Frontend + Backend)
+
+- **Frontend**: zod validation on all input forms
+- **Backend**: zod validation in API route (`app/api/watchlist/route.ts`)
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

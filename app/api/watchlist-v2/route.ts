@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { z } from 'zod';
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { z } from "zod";
 
 const projectRoot = process.cwd();
 const defaultDbUrl = `file:${projectRoot}/dev.db`;
@@ -13,18 +13,14 @@ const databaseUrl =
     ? process.env.DATABASE_URL
     : defaultDbUrl;
 
+// Prisma client backed by SQLite via adapter (avoids the broken `datasources` constructor path).
 const prisma = new PrismaClient({
   adapter: new PrismaBetterSqlite3({ url: databaseUrl }),
 });
 
-// สร้าง Schema ด้วย Zod สำหรับ Backend Verification
 const watchlistSchema = z.object({
   title: z.string().min(1, { message: "กรุณาใส่ชื่อหนัง" }),
-  rating: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(10, { message: "คะแนนต้องอยู่ระหว่าง 1-10" }),
+  rating: z.coerce.number().int().min(1).max(10, { message: "คะแนนต้องอยู่ระหว่าง 1-10" }),
   comment: z.string().optional(),
 });
 
@@ -35,28 +31,27 @@ const deleteSchema = z.object({ id: idSchema });
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
-    // ตรวจสอบข้อมูลด้วย Zod
     const validatedData = watchlistSchema.parse(body);
 
-    // บันทึกลง Database
-    const newEntry = await prisma.watchlist.create({
-      data: validatedData,
-    });
-
+    const newEntry = await prisma.watchlist.create({ data: validatedData });
     return NextResponse.json(newEntry, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ errors: error.issues }, { status: 400 });
     }
-    console.error("POST /api/watchlist failed:", error);
+    console.error("POST /api/watchlist-v2 failed:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
 export async function GET() {
-  const list = await prisma.watchlist.findMany({ orderBy: { createdAt: 'desc' } });
-  return NextResponse.json(list);
+  try {
+    const list = await prisma.watchlist.findMany({ orderBy: { createdAt: "desc" } });
+    return NextResponse.json(list);
+  } catch (error) {
+    console.error("GET /api/watchlist-v2 failed:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function PUT(request: Request) {
@@ -64,7 +59,6 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const validated = putSchema.parse(body);
 
-    // อัปเดตข้อมูลใน Database
     const updatedEntry = await prisma.watchlist.update({
       where: { id: validated.id },
       data: {
@@ -76,8 +70,10 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(updatedEntry);
   } catch (error) {
-    if (error instanceof z.ZodError) return NextResponse.json({ errors: error.issues }, { status: 400 });
-    console.error("PUT /api/watchlist failed:", error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ errors: error.issues }, { status: 400 });
+    }
+    console.error("PUT /api/watchlist-v2 failed:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -87,14 +83,11 @@ export async function DELETE(request: Request) {
     const body = await request.json();
     const validated = deleteSchema.parse(body);
 
-    // ลบข้อมูลจาก Database
-    await prisma.watchlist.delete({
-      where: { id: validated.id },
-    });
-
+    await prisma.watchlist.delete({ where: { id: validated.id } });
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch {
-    console.error("DELETE /api/watchlist failed");
+  } catch (error) {
+    console.error("DELETE /api/watchlist-v2 failed:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+

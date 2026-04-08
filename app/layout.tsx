@@ -1,30 +1,22 @@
-import './globals.css'
-import Link from 'next/link'
+import "./globals.css";
+import Navbar from "./components/Navbar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col">
-        {/* Navbar */}
-        <nav className="p-4 shadow-md">
-          <div className="container mx-auto flex justify-between items-center">
-            <Link href="/" className="text-xl font-bold">🎬 MyWatchlist</Link>
-            <div className="space-x-4">
-              <Link href="/" className="hover:underline">หน้าแรก (API)</Link>
-              <Link href="/my-list" className="hover:underline">หนังของฉัน (DB)</Link>
-              <Link href="/add" className="hover:underline">เพิ่มรีวิว</Link>
-            </div>
-          </div>
-        </nav>
+    <html lang="th">
+      <body className="min-h-screen flex flex-col antialiased">
+        <Navbar />
 
         {/* Main Content */}
-        <main className="grow container mx-auto p-4">
+        <main className="grow container mx-auto px-4 py-6 sm:py-10">
           {children}
         </main>
 
         {/* Footer */}
-        <footer className="text-center p-4 mt-auto">
-          <p>&copy; 2026 MyWatchlist Mini Project</p>
+        <footer className="mt-auto border-t border-white/10 bg-black/20">
+          <div className="container mx-auto px-4 py-6 text-center text-sm text-white/60">
+            <p>&copy; 2026 MyWatchlist Mini Project</p>
+          </div>
         </footer>
       </body>
     </html>
