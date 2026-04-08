@@ -1,10 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { tmdbImage, type TmdbMovie } from "@/app/lib/tmdb";
-import { useMemo, useState } from "react";
 
 export default function MovieRail({
   title,
@@ -15,13 +11,7 @@ export default function MovieRail({
   subtitle?: string;
   movies: TmdbMovie[];
 }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const initialCount = 12; // >= 10 on desktop (2 rows of 6 at lg)
-  const shown = useMemo(
-    () => (expanded ? movies : movies.slice(0, initialCount)),
-    [expanded, movies]
-  );
+  const shown = movies;
 
   return (
     <section className="space-y-3">
@@ -30,37 +20,26 @@ export default function MovieRail({
           <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">{title}</h2>
           {subtitle ? <p className="mt-1 text-sm text-white/60">{subtitle}</p> : null}
         </div>
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="hidden sm:inline-flex rounded-full px-3 py-2 text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 transition"
-        >
-          {expanded ? "Collapse" : "See all"}
-        </button>
+        <div className="hidden sm:flex items-center gap-2 text-xs text-white/50">
+          <span>Scroll</span>
+          <span className="h-px w-10 bg-white/15" />
+        </div>
       </div>
 
       <div className="relative -mx-4 px-4">
         <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-linear-to-r from-black/40 to-transparent z-10" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-black/40 to-transparent z-10" />
 
-        <motion.div
-          layout
-          className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {shown.map((m, idx) => (
-            <motion.div
+        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {shown.map((m) => (
+            <div
               key={m.id}
-              layout
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20%" }}
-              transition={{ duration: 0.28, delay: Math.min(0.16, idx * 0.012) }}
               className="shrink-0 w-[210px] sm:w-[230px] lg:w-[250px] snap-start"
             >
               <MovieTile movie={m} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

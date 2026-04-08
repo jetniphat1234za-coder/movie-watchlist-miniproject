@@ -1,29 +1,8 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-      className={[
-        "sticky top-0 z-40 border-b backdrop-blur supports-backdrop-filter:bg-black/25",
-        scrolled ? "border-white/10 bg-black/35" : "border-transparent bg-black/10",
-      ].join(" ")}
-    >
+    <nav className="sticky top-0 z-40 border-b border-white/15 bg-slate-900/45 backdrop-blur supports-backdrop-filter:bg-slate-900/35">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link href="/" className="group flex items-center gap-2">
           <span className="text-xl">🎬</span>
@@ -56,7 +35,7 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
-    </motion.nav>
+    </nav>
   );
 }
 
