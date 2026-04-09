@@ -22,6 +22,13 @@ const watchlistSchema = z.object({
   title: z.string().min(1, { message: "กรุณาใส่ชื่อหนัง" }),
   rating: z.coerce.number().int().min(1).max(10, { message: "คะแนนต้องอยู่ระหว่าง 1-10" }),
   comment: z.string().optional(),
+  // TMDB fields
+  tmdbId: z.number().int().optional().nullable(),
+  posterPath: z.string().optional().nullable(),
+  overview: z.string().optional().nullable(),
+  tmdbRating: z.number().optional().nullable(),
+  releaseDate: z.string().optional().nullable(),
+  genres: z.string().optional().nullable(),
 });
 
 const idSchema = z.coerce.number().int().positive({ message: "ID ต้องเป็นตัวเลขบวก" });
@@ -33,7 +40,19 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = watchlistSchema.parse(body);
 
-    const newEntry = await prisma.watchlist.create({ data: validatedData });
+    const newEntry = await prisma.watchlist.create({ 
+      data: {
+        title: validatedData.title,
+        rating: validatedData.rating,
+        comment: validatedData.comment,
+        tmdbId: validatedData.tmdbId,
+        posterPath: validatedData.posterPath,
+        overview: validatedData.overview,
+        tmdbRating: validatedData.tmdbRating,
+        releaseDate: validatedData.releaseDate,
+        genres: validatedData.genres,
+      }
+    });
     return NextResponse.json(newEntry, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {

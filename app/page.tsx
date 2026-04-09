@@ -14,11 +14,14 @@ export default async function Home() {
               curated • cinematic
             </p>
             <h1 className="mt-3 text-4xl sm:text-6xl font-semibold tracking-tight leading-[1.02]">
-              Discover films you’ll actually remember.
+              Discover films you'll actually remember.
             </h1>
             <p className="mt-4 text-base sm:text-lg text-white/70">
               Curated cinematic collections. Save titles to your watchlist in a single tap.
             </p>
+
+            {/* Search Filter Component */}
+            {hasKey && <SearchFilter />}
           </div>
 
           {!hasKey ? (
@@ -38,4 +41,5 @@ export default async function Home() {
   );
 }
 
+import SearchFilter from './components/SearchFilter';
 import HomeRails from "./sections/HomeRails";

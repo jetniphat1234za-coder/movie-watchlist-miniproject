@@ -9,8 +9,17 @@ datasource db {
 model Watchlist {
   id        Int      @id @default(autoincrement())
   title     String
-  imdbId    String?  // ไอดีอ้างอิงจาก API ภายนอก
-  rating    Int
+  tmdbId    Int?     // TMDB ID
+  imdbId    String?  // IMDb ID
+  rating    Int      // 1-10 (how much want to watch)
   comment   String?
+  
+  // TMDB Data
+  posterPath    String?
+  overview      String?
+  tmdbRating    Float?   // TMDB vote average
+  genres        String?  // JSON array of genres
+  releaseDate   String?
+  
   createdAt DateTime @default(now())
 }

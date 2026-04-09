@@ -3,15 +3,31 @@
 import { useEffect, useState } from "react";
 import type { Watchlist } from "@prisma/client";
 import EditMovieModal from "@/app/components/EditMovieModal";
+import ConfirmDialog from "@/app/components/ConfirmDialog";
+import AlertDialog from "@/app/components/AlertDialog";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function MyList() {
+  
   const [movies, setMovies] = useState<Watchlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMovie, setEditingMovie] = useState<Watchlist | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [alertDialog, setAlertDialog] = useState<{
+    isOpen: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: "error",
+    title: "",
+    message: "",
+  });
 
   // ดึงข้อมูลหนังจาก API
   const fetchMovies = async () => {
@@ -43,22 +59,40 @@ export default function MyList() {
 
   // ลบหนัง
   const handleDelete = async (id: number) => {
-    if (confirm("คุณแน่ใจหรือว่าต้องการลบหนังเรื่องนี้?")) {
-      try {
-        const res = await fetch("/api/watchlist-v2", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id }),
-        });
+    setDeleteConfirmId(id);
+  };
 
-        if (res.ok) {
-          setMovies(movies.filter((m) => m.id !== id));
-        } else {
-          alert("เกิดข้อผิดพลาดในการลบ");
-        }
-      } catch {
-        alert("เกิดข้อผิดพลาด");
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
+    
+    setDeletingId(deleteConfirmId);
+    try {
+      const res = await fetch("/api/watchlist-v2", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: deleteConfirmId }),
+      });
+
+      if (res.ok) {
+        setMovies(movies.filter((m) => m.id !== deleteConfirmId));
+        setDeleteConfirmId(null);
+      } else {
+        setAlertDialog({
+          isOpen: true,
+          type: "error",
+          title: "เกิดข้อผิดพลาด",
+          message: "ไม่สามารถลบหนังได้ กรุณาลองใหม่",
+        });
       }
+    } catch {
+      setAlertDialog({
+        isOpen: true,
+        type: "error",
+        title: "เกิดข้อผิดพลาด",
+        message: "เกิดปัญหาในการเชื่อมต่อ กรุณาลองใหม่",
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -229,6 +263,27 @@ export default function MyList() {
           movie={editingMovie}
         />
       ) : null}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirmId !== null}
+        title="ลบหนังจากรายการ"
+        message="คุณแน่ใจว่าต้องการลบหนังเรื่องนี้ออกจากรายการหรือ?"
+        confirmText={deletingId ? "กำลังลบ..." : "ลบ"}
+        cancelText="ยกเลิก"
+        isDangerous
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirmId(null)}
+      />
+
+      {/* Error Alert Dialog */}
+      <AlertDialog
+        isOpen={alertDialog.isOpen}
+        type={alertDialog.type}
+        title={alertDialog.title}
+        message={alertDialog.message}
+        onClose={() => setAlertDialog({ ...alertDialog, isOpen: false })}
+      />
     </div>
   );
 }
