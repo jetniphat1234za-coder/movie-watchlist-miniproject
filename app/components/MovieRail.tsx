@@ -30,11 +30,11 @@ export default function MovieRail({
         <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-linear-to-r from-black/40 to-transparent z-10" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-black/40 to-transparent z-10" />
 
-        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory sm:gap-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {shown.map((m) => (
             <div
               key={m.id}
-              className="shrink-0 w-[210px] sm:w-[230px] lg:w-[250px] snap-start"
+              className="shrink-0 w-[180px] sm:w-[230px] lg:w-[250px] snap-start"
             >
               <MovieTile movie={m} />
             </div>
@@ -49,7 +49,7 @@ function MovieTile({ movie: m }: { movie: TmdbMovie }) {
   return (
     <Link
       href={`/movies/${m.id}`}
-      className="group block rounded-2xl overflow-hidden border border-white/10 bg-white/5 hover:bg-white/8 transition duration-300"
+      className="group block h-full rounded-2xl overflow-hidden border border-white/10 bg-white/5 hover:bg-white/8 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
     >
       <div className="relative aspect-2/3">
         {m.poster_path ? (
@@ -66,6 +66,12 @@ function MovieTile({ movie: m }: { movie: TmdbMovie }) {
           </div>
         )}
         <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="mx-3 mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-3 py-1 text-xs text-white/80">
+            <span className="h-1.5 w-1.5 rounded-full bg-rose-300/90" />
+            View details
+          </div>
+        </div>
       </div>
 
       <div className="p-4">

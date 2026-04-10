@@ -1,10 +1,12 @@
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import ScrollReactiveBackdrop from "./components/ScrollReactiveBackdrop";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th">
       <body className="min-h-screen flex flex-col antialiased">
+        <ScrollReactiveBackdrop />
         <Navbar />
 
         {/* Main Content */}
