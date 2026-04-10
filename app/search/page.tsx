@@ -92,7 +92,7 @@ export default function SearchPage() {
         </div>
       ) : sortedResults.length === 0 ? (
         <div className="text-center py-12 space-y-4">
-          <p className="text-white/70">No movies found for "{query}"</p>
+          <p className="text-white/70">No movies found for &quot;{query}&quot;</p>
           <Link
             href="/"
             className="inline-block rounded-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold transition"
