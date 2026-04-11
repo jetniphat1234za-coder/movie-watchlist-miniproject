@@ -1,8 +1,10 @@
 'use client';
 
+// Internationalization for search page
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 
 interface TMDBMovie {
   id: number;
@@ -14,6 +16,7 @@ interface TMDBMovie {
 }
 
 export default function SearchPage() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState<TMDBMovie[]>([]);
@@ -63,10 +66,10 @@ export default function SearchPage() {
       {/* Header */}
       <div className="space-y-4">
         <h1 className="text-3xl sm:text-4xl font-semibold">
-          Search Results
+          {t("search_results")}
         </h1>
         <p className="text-white/70">
-          {loading ? 'Searching...' : `Found ${sortedResults.length} movie${sortedResults.length !== 1 ? 's' : ''} for "${query}"`}
+          {loading ? t("searching") : `${t("found_movies")} ${sortedResults.length} ${sortedResults.length === 1 ? t("movie_singular") : t("movie_plural")} "${query}"`}
         </p>
       </div>
 
@@ -78,9 +81,9 @@ export default function SearchPage() {
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="rounded-full px-4 py-2 bg-white/5 border border-white/10 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 transition cursor-pointer text-sm"
           >
-            <option value="rating-high">⭐ Rating (High to Low)</option>
-            <option value="rating-low">⭐ Rating (Low to High)</option>
-            <option value="name">A-Z Sorted</option>
+            <option value="rating-high">{t("sort_rating_high")}</option>
+            <option value="rating-low">{t("sort_rating_low")}</option>
+            <option value="name">{t("sort_name")}</option>
           </select>
         </div>
       )}
@@ -88,16 +91,16 @@ export default function SearchPage() {
       {/* Results */}
       {loading ? (
         <div className="text-center py-12 text-white/50">
-          <p>🔍 Searching...</p>
+          <p>🔍 {t("searching")}</p>
         </div>
       ) : sortedResults.length === 0 ? (
         <div className="text-center py-12 space-y-4">
-          <p className="text-white/70">No movies found for &quot;{query}&quot;</p>
+          <p className="text-white/70">{t("no_movies_found")} "{query}"</p>
           <Link
             href="/"
             className="inline-block rounded-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold transition"
           >
-            Try Another Search
+            {t("try_another_search")}
           </Link>
         </div>
       ) : (
@@ -118,7 +121,7 @@ export default function SearchPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-white/50">
-                    No Image
+                    {t("no_image")}
                   </div>
                 )}
               </div>
@@ -137,12 +140,12 @@ export default function SearchPage() {
                 </div>
 
                 <p className="text-xs text-white/60 line-clamp-2">
-                  {movie.overview || 'No description available'}
+                  {movie.overview || t("no_description")}
                 </p>
 
                 <div className="pt-2">
                   <span className="text-xs bg-indigo-500/20 text-indigo-200 px-2 py-1 rounded-full">
-                    + Add to Watchlist
+                    {t("add_to_watchlist")}
                   </span>
                 </div>
               </div>

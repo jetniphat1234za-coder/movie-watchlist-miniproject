@@ -1,6 +1,6 @@
 import CinematicIntro from "./components/CinematicIntro";
 import Hero from "./components/Hero";
-import Section from "./components/Section";
+import MovieSectionsClient from "./components/MovieSectionsClient";
 import { fetchPopularMovies, fetchTopRatedMovies, fetchTrendingMovies } from "./lib/tmdb";
 
 export default async function Home() {
@@ -32,11 +32,11 @@ export default async function Home() {
       <CinematicIntro />
       <Hero />
 
-      <div id="movie-sections" className="space-y-14 pt-2">
-        <Section title="Trending" subtitle="What everyone is watching now" movies={trending.results.slice(0, 10)} />
-        <Section title="Popular" subtitle="Big audience favorites" movies={popular.results.slice(0, 10)} />
-        <Section title="Top Rated" subtitle="Critically acclaimed picks" movies={topRated.results.slice(0, 10)} />
-      </div>
+      <MovieSectionsClient
+        trendingMovies={trending.results.slice(0, 10)}
+        popularMovies={popular.results.slice(0, 10)}
+        topRatedMovies={topRated.results.slice(0, 10)}
+      />
     </div>
   );
 }

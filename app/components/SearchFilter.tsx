@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 
 type SuggestionMovie = {
   id: number;
@@ -12,6 +13,7 @@ type SuggestionMovie = {
 
 export default function SearchFilter() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<SuggestionMovie[]>([]);
   const [openSuggestions, setOpenSuggestions] = useState(false);
@@ -63,7 +65,7 @@ export default function SearchFilter() {
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder="🔍 Search for a movie..."
+            placeholder={`🔍 ${t("search_placeholder")}`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setOpenSuggestions(suggestions.length > 0)}

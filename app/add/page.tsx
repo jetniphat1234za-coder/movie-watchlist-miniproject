@@ -4,6 +4,7 @@ import { useState, Suspense, useCallback, useEffect } from "react";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertDialog from "@/app/components/AlertDialog";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 interface TMDBMovie {
   id: number;
@@ -30,6 +31,7 @@ type FormData = z.infer<typeof formSchema>;
 function FormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   
   // ดึงชื่อหนังจาก URL (ถ้ามี) มาใส่เป็นค่าเริ่มต้น
   const initialTitle = searchParams.get("title") || "";
@@ -122,8 +124,8 @@ function FormContent() {
       setAlertDialog({
         isOpen: true,
         type: "success",
-        title: "บันทึกสำเร็จ!",
-        message: "เพิ่มหนังลง My Watchlist เรียบร้อยแล้ว",
+        title: t("save_success"),
+        message: t("save_success_desc"),
       });
       // Redirect after a brief delay
       setTimeout(() => {
@@ -133,8 +135,8 @@ function FormContent() {
       setAlertDialog({
         isOpen: true,
         type: "error",
-        title: "เกิดข้อผิดพลาด",
-        message: "ไม่สามารถบันทึกหนังได้ กรุณาลองใหม่",
+        title: t("error"),
+        message: t("save_error"),
       });
     }
     setIsSubmitting(false);
@@ -142,16 +144,16 @@ function FormContent() {
 
   return (
     <div className="max-w-lg mx-auto rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 shadow-lg shadow-black/20 text-white">
-      <h1 className="text-2xl font-semibold mb-6 text-center tracking-tight">เพิ่มหนังที่อยากดู</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-center tracking-tight">{t("add_movie_title")}</h1>
       
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* TMDB Search */}
         <div className="space-y-2">
-          <label className="block text-sm text-white/80 mb-1">ค้นหาหนัง (จาก TMDB)</label>
+          <label className="block text-sm text-white/80 mb-1">{t("search_tmdb")}</label>
           <div className="relative">
             <input 
               type="text" 
-              placeholder="พิมพ์ชื่อหนัง..."
+              placeholder={t("search_tmdb_placeholder")}
               value={tmdbSearchQuery}
               onChange={(e) => setTmdbSearchQuery(e.target.value)}
               className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 text-white placeholdertext-white/50"
@@ -212,14 +214,14 @@ function FormContent() {
                 onClick={() => setSelectedTmdb(null)}
                 className="text-xs text-indigo-300 hover:text-indigo-200 underline"
               >
-                × Clear selection
+                {t("clear_selection")}
               </button>
             </div>
           )}
         </div>
 
         <div>
-          <label className="block text-sm text-white/80 mb-1">ชื่อหนัง *</label>
+          <label className="block text-sm text-white/80 mb-1">{t("movie_title")} *</label>
           <input 
             type="text" 
             className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 text-white"
@@ -232,7 +234,7 @@ function FormContent() {
         </div>
 
         <div>
-          <label className="block text-sm text-white/80 mb-1">คะแนนความอยากดู (1-10) *</label>
+          <label className="block text-sm text-white/80 mb-1">{t("movie_rating")} *</label>
           <div className="flex items-center gap-4">
             <input
               type="range"
@@ -250,13 +252,13 @@ function FormContent() {
         </div>
 
         <div>
-          <label className="block text-sm text-white/80 mb-1">ความรู้สึก / คอมเมนต์</label>
+          <label className="block text-sm text-white/80 mb-1">{t("movie_comment")}</label>
           <textarea 
             className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 text-white"
             rows={4}
             value={formData.comment}
             onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-            placeholder="เช่น ต้องไปดูในโรงให้ได้!"
+            placeholder={t("movie_comment_placeholder")}
           />
         </div>
 
@@ -268,20 +270,22 @@ function FormContent() {
           {isSubmitting && (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           )}
-          {isSubmitting ? "กำลังบันทึก..." : "เก็บบันทึกข้อมูล"}
+          {isSubmitting ? t("saving") : t("save_movie")}
         </button>
       </form>
 
       {/* Alert Dialog */}
-      <AlertDialog
-        isOpen={alertDialog.isOpen}
-        type={alertDialog.type}
-        title={alertDialog.title}
-        message={alertDialog.message}
-        onClose={() =>
-          setAlertDialog({ ...alertDialog, isOpen: false })
-        }
-      />
+      {alertDialog.isOpen && (
+        <AlertDialog
+          isOpen={alertDialog.isOpen}
+          type={alertDialog.type}
+          title={alertDialog.title}
+          message={alertDialog.message}
+          onClose={() =>
+            setAlertDialog({ ...alertDialog, isOpen: false })
+          }
+        />
+      )}
     </div>
   );
 }

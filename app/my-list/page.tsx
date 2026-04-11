@@ -6,10 +6,11 @@ import EditMovieModal from "@/app/components/EditMovieModal";
 import ConfirmDialog from "@/app/components/ConfirmDialog";
 import AlertDialog from "@/app/components/AlertDialog";
 import Link from "next/link";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function MyList() {
-  
+  const { t } = useLanguage();
   const [movies, setMovies] = useState<Watchlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMovie, setEditingMovie] = useState<Watchlist | null>(null);
@@ -41,7 +42,7 @@ export default function MyList() {
       setMovies(data);
     } catch (_error) {
       console.error("Failed to fetch movies:", _error);
-      setLoadError("โหลดรายการหนังไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+      setLoadError(t("loading_error"));
     } finally {
       setLoading(false);
     }
@@ -80,16 +81,16 @@ export default function MyList() {
         setAlertDialog({
           isOpen: true,
           type: "error",
-          title: "เกิดข้อผิดพลาด",
-          message: "ไม่สามารถลบหนังได้ กรุณาลองใหม่",
+          title: t("error"),
+          message: t("delete_error"),
         });
       }
     } catch {
       setAlertDialog({
         isOpen: true,
         type: "error",
-        title: "เกิดข้อผิดพลาด",
-        message: "เกิดปัญหาในการเชื่อมต่อ กรุณาลองใหม่",
+        title: t("error"),
+        message: t("connection_error"),
       });
     } finally {
       setDeletingId(null);
@@ -99,7 +100,7 @@ export default function MyList() {
   if (loading) {
     return (
       <div className="text-center text-gray-400 mt-10">
-        <p>กำลังโหลด...</p>
+        <p>{t("loading")}</p>
       </div>
     );
   }
@@ -112,27 +113,27 @@ export default function MyList() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="relative">
             <p className="text-xs uppercase tracking-[0.22em] text-white/60">
-              saved collection
+              {t("saved_collection")}
             </p>
             <h1 className="mt-3 text-3xl sm:text-5xl font-semibold tracking-tight">
-              Watchlist
+              {t("watchlist_title")}
             </h1>
             <p className="mt-3 text-white/70 max-w-xl">
-              Keep a short list. Make it intentional. Edit notes, refine taste.
+              {t("watchlist_subtitle")}
             </p>
           </div>
           <Link
             href="/"
             className="relative inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold bg-white text-black hover:bg-white/90 transition shadow-sm shadow-black/30"
           >
-            + เพิ่มจากหน้าแรก
+            {t("add_from_home")}
           </Link>
         </div>
       </header>
 
       {loadError ? (
         <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-5 text-red-100">
-          <p className="font-semibold">มีปัญหาในการโหลด</p>
+          <p className="font-semibold">{t("loading_error_title")}</p>
           <p className="mt-1 text-sm text-red-100/80">{loadError}</p>
           <button
             className="mt-4 rounded-full px-4 py-2 text-sm font-semibold bg-white/10 hover:bg-white/15 border border-white/10 transition"
@@ -141,7 +142,7 @@ export default function MyList() {
               fetchMovies();
             }}
           >
-            ลองใหม่
+            {t("retry")}
           </button>
         </div>
       ) : null}
@@ -152,26 +153,26 @@ export default function MyList() {
           <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-white/60">
-                empty state
+                {t("empty_state")}
               </p>
               <h2 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight">
-                Nothing saved yet.
+                {t("nothing_saved")}
               </h2>
               <p className="mt-3 text-white/70 max-w-xl">
-                Start with one film you genuinely want to watch. Keep the list short and meaningful.
+                {t("nothing_saved_desc")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   className="rounded-full px-4 py-2 text-sm font-semibold bg-white text-black hover:bg-white/90 transition shadow-sm shadow-black/30"
                   href="/"
                 >
-                  Browse films
+                  {t("browse_films")}
                 </Link>
                 <Link
                   className="rounded-full px-4 py-2 text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition"
                   href="/add"
                 >
-                  Add manually
+                  {t("add_manually")}
                 </Link>
               </div>
             </div>
@@ -193,9 +194,9 @@ export default function MyList() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-white/60">
-              {movies.length} saved
+              {movies.length} {t("saved_count")}
             </p>
-            <p className="text-xs text-white/50">Tip: edit notes to remember why.</p>
+            <p className="text-xs text-white/50">{t("edit_notes")}</p>
           </div>
 
           <motion.div layout className="space-y-3">
@@ -222,10 +223,10 @@ export default function MyList() {
                         </span>
                       </div>
                       <p className="mt-2 text-sm text-white/70 line-clamp-2">
-                        {movie.comment ? `"${movie.comment}"` : "No note yet — add one to remember the vibe."}
+                        {movie.comment ? `"${movie.comment}"` : t("no_note_yet")}
                       </p>
                       <p className="mt-2 text-xs text-white/45">
-                        Saved {new Date(movie.createdAt).toLocaleDateString("en-US")}
+                        {t("saved_date")} {new Date(movie.createdAt).toLocaleDateString("en-US")}
                       </p>
                     </div>
 
@@ -234,13 +235,13 @@ export default function MyList() {
                         onClick={() => handleEditClick(movie)}
                         className="rounded-full px-4 py-2 text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition"
                       >
-                        Edit
+                        {t("edit")}
                       </button>
                       <button
                         onClick={() => handleDelete(movie.id)}
                         className="rounded-full px-4 py-2 text-sm font-semibold bg-red-500/10 hover:bg-red-500/15 border border-red-500/20 text-red-100 transition"
                       >
-                        Remove
+                        {t("remove")}
                       </button>
                     </div>
                   </div>
@@ -267,10 +268,10 @@ export default function MyList() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirmId !== null}
-        title="ลบหนังจากรายการ"
-        message="คุณแน่ใจว่าต้องการลบหนังเรื่องนี้ออกจากรายการหรือ?"
-        confirmText={deletingId ? "กำลังลบ..." : "ลบ"}
-        cancelText="ยกเลิก"
+        title={t("delete_title")}
+        message={t("delete_confirm")}
+        confirmText={deletingId ? t("deleting") : t("del")}
+        cancelText={t("cancel")}
         isDangerous
         onConfirm={confirmDelete}
         onCancel={() => setDeleteConfirmId(null)}

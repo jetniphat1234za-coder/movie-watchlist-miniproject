@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
+  const { t } = useLanguage();
+
   return (
     <nav className="sticky top-0 z-40 border-b border-white/15 bg-slate-900/45 backdrop-blur supports-backdrop-filter:bg-slate-900/35">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
@@ -14,25 +20,28 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/"
             className="rounded-full px-3 py-2 text-sm text-white/75 hover:text-white hover:bg-white/10 transition"
           >
-            Discover
+            {t("discover")}
           </Link>
           <Link
             href="/my-list"
             className="rounded-full px-3 py-2 text-sm text-white/75 hover:text-white hover:bg-white/10 transition"
           >
-            Watchlist
+            {t("watchlist")}
           </Link>
           <Link
             href="/add"
             className="rounded-full px-3 py-2 text-sm font-semibold bg-white text-black hover:bg-white/90 transition shadow-sm shadow-black/30"
           >
-            Add
+            {t("add")}
           </Link>
+
+          <div className="ml-2 h-6 w-px bg-white/10" />
+          <LanguageSwitcher />
         </div>
       </div>
     </nav>
