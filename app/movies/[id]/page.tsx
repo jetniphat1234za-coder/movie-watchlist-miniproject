@@ -127,9 +127,21 @@ export default async function MovieDetailPage({
                 <p className="text-sm leading-relaxed text-white/75">
                   {movie.overview || "No overview available."}
                 </p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <AddToWatchlistButton title={movie.title} />
-                  {trailer ? <TrailerModal youtubeKey={trailer.key} /> : null}
+                <div className="mt-5 space-y-3">
+                  <AddToWatchlistButton
+                    movie={{
+                      title: movie.title,
+                      tmdbId: movie.id,
+                      posterPath: movie.poster_path,
+                      overview: movie.overview,
+                      tmdbRating: movie.vote_average,
+                      releaseDate: movie.release_date,
+                      genres: JSON.stringify(movie.genres.map((genre) => genre.name)),
+                    }}
+                  />
+                  <div className="flex flex-wrap gap-3">
+                    {trailer ? <TrailerModal youtubeKey={trailer.key} /> : null}
+                  </div>
                 </div>
               </div>
             </div>

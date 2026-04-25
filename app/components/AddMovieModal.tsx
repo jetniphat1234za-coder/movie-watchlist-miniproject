@@ -18,12 +18,21 @@ interface AddMovieModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialTitle: string;
+  tmdbData?: {
+    tmdbId?: number | null;
+    posterPath?: string | null;
+    overview?: string | null;
+    tmdbRating?: number | null;
+    releaseDate?: string | null;
+    genres?: string | null;
+  };
 }
 
 export default function AddMovieModal({
   isOpen,
   onClose,
   initialTitle,
+  tmdbData,
 }: AddMovieModalProps) {
   const [formData, setFormData] = useState({
     title: initialTitle,
@@ -53,7 +62,10 @@ export default function AddMovieModal({
       const res = await fetch("/api/watchlist-v2", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(validation.data),
+        body: JSON.stringify({
+          ...validation.data,
+          ...tmdbData,
+        }),
       });
 
       if (res.ok) {
@@ -83,8 +95,9 @@ export default function AddMovieModal({
       ></div>
 
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div className="rounded-2xl shadow-2xl max-w-lg w-full p-6 sm:p-8 border border-white/10 bg-neutral-950/80 backdrop-blur text-white animate-pop">
+      <div className="fixed inset-0 z-50 overflow-y-auto p-3 sm:p-4">
+        <div className="min-h-full flex items-center justify-center">
+          <div className="rounded-2xl shadow-2xl max-w-lg w-full max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] overflow-y-auto p-5 sm:p-8 border border-white/10 bg-neutral-950/80 backdrop-blur text-white animate-pop">
           <h1 className="text-2xl font-semibold mb-6 tracking-tight">
             📝 เพิ่มเข้า My Watchlist
           </h1>
@@ -171,6 +184,7 @@ export default function AddMovieModal({
               </div>
             </form>
           )}
+          </div>
         </div>
       </div>
     </>
